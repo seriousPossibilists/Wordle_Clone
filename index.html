@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body> 
+    <div class="grid-container"></div>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tilt+Warp&display=swap');
+        :root{
+            --letters: 5;
+        }
+
+        body {
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(var(--letters), auto);
+        }
+        .box{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            height: 100px;
+            width: 100px;
+            font-family: 'Tilt Warp', cursive;
+            font-size: 3.5rem;
+            background-color: transparent;
+            border: white solid 1px;
+            user-select: none;
+            color: white;
+        }
+    </style>
+    <script>
+        let numTries = 0;
+        let gridCont = document.querySelector(".grid-container");
+        let listWords = ["STAGE", "ABSURD", "PICTURE", "SENTENCE"];
+        let letterArr = [];
+        let boxArr = [];
+        let attempt = 0;
+        let trialArr = [];
+        let numLetters = parseInt(prompt("How many letters do you want?"));
+        let root = document.querySelector(':root');
+        root.style.setProperty('--letters', numLetters.toString())
+        if(numLetters < 5 || isNaN(numLetters) || numLetters > 8) alert("Error. Please reload and try again");
+        let chosenWord = listWords[numLetters - 5].split('');
+
+        function createBoxes(){
+            for(let i = 0; i < numLetters * 6; i++)
+            {
+                let newDiv = document.createElement("div");
+                newDiv.classList.add("box");
+                gridCont.append(newDiv);
+                boxArr.push(newDiv);
+            }
+            while(boxArr.length)
+            {
+                trialArr.push(boxArr.splice(0, numLetters));
+            }
+        }   
+        createBoxes();
+
+        document.addEventListener("keydown", (key) => {
+
+            if(key.key.toUpperCase() == "ENTER") {
+                if(letterArr.length != numLetters) return;
+                checkLetters();
+                letterArr = [];
+                numTries++;
+                attempt++;
+            }
+            
+            let k = key.which;
+            if (k == 20 
+                || k == 16 
+                || k == 9 
+                || k == 27 
+                || k == 17 
+                || k == 91 
+                || k == 19 
+                || k == 18 
+                || k == 93 
+                || ( k >= 35 && k <= 40 ) 
+                || k == 45 
+                || ( k >= 33 && k <= 34 ) 
+                || (k >= 112 && k <= 123)
+                || k == 13 
+                || (k >= 144 && k <= 145 )) { 
+                    return;
+            }
+            if(letterArr.length == (numLetters) && key.key.toUpperCase() != "BACKSPACE") return;
+
+            if(key.key.toUpperCase() == "BACKSPACE") {
+                deleteLetters();
+            }   
+            else{
+                letterArr.push(key.key.toUpperCase());
+                renderLetters();
+            }
+        })
+
+        function renderLetters() {
+            for(let i = 0; i < trialArr.length - (trialArr.length - numLetters); i++) {
+                trialArr[attempt][i].innerText = "";
+            }
+            for (let i = 0; i < letterArr.length; i++) {
+                trialArr[attempt][i].innerText = letterArr[i];
+            }
+        }
+
+        function checkLetters() {
+            if(numTries >= 6) return;
+            for(let i = 0; i < letterArr.length; i++)
+            {
+                if(letterArr[i] == chosenWord[i])
+                {
+                    trialArr[attempt][i].style.backgroundColor = "#085c1a";
+                }
+                else if(chosenWord.includes(letterArr[i]))
+                {
+                    trialArr[attempt][i].style.backgroundColor = "#bd8d09";
+                }
+                else
+                {
+                    trialArr[attempt][i].style.backgroundColor = "gray";
+                }
+            }
+        }
+
+        function deleteLetters() {
+            letterArr.pop();
+            renderLetters();
+        }
+    </script>
+</body>
+</html>
